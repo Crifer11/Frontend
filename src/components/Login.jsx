@@ -178,7 +178,7 @@ function Login() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        backgroundImage: "url(../Fondo.JPEG)", // nueva placa
+        backgroundImage: "url(/../Fondo.jpeg)", // nueva placa
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

@@ -14,7 +14,7 @@ import SecurityIcon from "@mui/icons-material/Security";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
-const API_URL = "https://backend-proyecto-production-8856.up.railway.app"
+export const API_URL = "https://backend-proyecto-production-8856.up.railway.app"
 
 // ── Fila de stats: reparte el espacio en partes iguales ─────────────
 function StatsRow({ children }) {

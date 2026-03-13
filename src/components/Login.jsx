@@ -234,7 +234,7 @@ function Login() {
       {/* 🔹 LOGO */}
       <Box
         component="img"
-        src="../../logo2.png"
+        src="../logo2.png"
         alt="SafeGate Logo"
         sx={{
           width: 250,

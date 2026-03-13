@@ -40,7 +40,7 @@ function Informacion() {
   useEffect(() => {
     const obtenerInformacion = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/informacion?id=${id}&rol=${rol}`);
+        const response = await fetch(`${API_URL}/informacion?id=${id}&rol=${rol}`);
         const data = await response.json();
 
         if (data.error) {
@@ -71,7 +71,7 @@ function Informacion() {
     formData.append("id_residente", idPersona);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/autorizar_auto", {
+      const res = await fetch(`${API_URL}/autorizar_auto`, {
         method: "POST",
         body: formData,
       });
@@ -108,7 +108,7 @@ function Informacion() {
     formData.append("id_residente", idPersona);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/desautorizar_auto", {
+      const res = await fetch(`${API_URL}/desautorizar_auto`, {
         method: "POST",
         body: formData,
       });
@@ -131,7 +131,7 @@ function Informacion() {
     formData.append("id", info.id);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/generar_token", {
+      const response = await fetch(`${API_URL}/generar_token`, {
         method: "POST",
         body: formData,
       });
@@ -170,7 +170,7 @@ function Informacion() {
           <Stack direction="row" spacing={3} alignItems="center">
             {info.foto ? (
               <Avatar
-                src={`http://127.0.0.1:8000/static/perfiles/${info.foto}?t=${Date.now()}`}
+                src={`${API_URL}/static/perfiles/${info.foto}?t=${Date.now()}`}
                 sx={{ width: 120, height: 120 }}
               />
             ) : (
@@ -459,7 +459,7 @@ function Informacion() {
                     {aut.foto && (
                       <Box sx={{ display: "flex", justifyContent: "center" }}>
                         <Avatar
-                          src={`http://127.0.0.1:8000/static/perfiles/${aut.foto}?t=${Date.now()}`}
+                          src={`${API_URL}/static/perfiles/${aut.foto}?t=${Date.now()}`}
                           sx={{ width: 100, height: 100 }}
                         />
                       </Box>

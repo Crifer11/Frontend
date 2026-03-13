@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, Typography, Stack, Box, Button, Divider } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import { API_URL } from "./Menu"
 
 function Reportes() {
   const [reportes, setReportes] = useState([]);

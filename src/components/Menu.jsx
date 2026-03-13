@@ -14,6 +14,8 @@ import SecurityIcon from "@mui/icons-material/Security";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
+export const API_URL = "https://backend-proyecto-production-8856.up.railway.app"
+
 // ── Fila de stats: reparte el espacio en partes iguales ─────────────
 function StatsRow({ children }) {
   return (
@@ -127,7 +129,7 @@ function TokenSection({ id, flex = 1 }) {
     const formData = new FormData();
     formData.append("id", id);
     try {
-      const res = await fetch("http://127.0.0.1:8000/generar_token", { method: "POST", body: formData });
+      const res = await fetch(`${API_URL}/generar_token`, { method: "POST", body: formData });
       const data = await res.json();
       if (res.ok) {
         setToken(data.token);
@@ -216,8 +218,8 @@ function DashResidente({ id }) {
   const [reportes, setReportes] = useState(null);
   const [autos, setAutos] = useState(null);
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/menu/residente/reportes/${id}`).then(r => r.json()).then(setReportes).catch(console.error);
-    fetch(`http://127.0.0.1:8000/menu/residente/autos/${id}`).then(r => r.json()).then(setAutos).catch(console.error);
+    fetch(`${API_URL}/menu/residente/reportes/${id}`).then(r => r.json()).then(setReportes).catch(console.error);
+    fetch(`${API_URL}/menu/residente/autos/${id}`).then(r => r.json()).then(setAutos).catch(console.error);
   }, [id]);
 
   return (
@@ -240,7 +242,7 @@ function DashResidente({ id }) {
 function DashAutorizado({ id }) {
   const [autos, setAutos] = useState(null);
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/menu/autorizado/autos/${id}`).then(r => r.json()).then(setAutos).catch(console.error);
+    fetch(`${API_URL}/menu/autorizado/autos/${id}`).then(r => r.json()).then(setAutos).catch(console.error);
   }, [id]);
 
   return (
@@ -271,9 +273,9 @@ function DashVigilante() {
   const [ultimoReporte, setUltimoReporte] = useState(null);
   const [casetas, setCasetas] = useState(null);
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/menu/reportes/resumen").then(r => r.json()).then(setResumen).catch(console.error);
-    fetch("http://127.0.0.1:8000/menu/admin/ultimo-reporte").then(r => r.json()).then(setUltimoReporte).catch(console.error);
-    fetch("http://127.0.0.1:8000/menu/casetas").then(r => r.json()).then(setCasetas).catch(console.error);
+    fetch(`${API_URL}/menu/reportes/resumen`).then(r => r.json()).then(setResumen).catch(console.error);
+    fetch(`${API_URL}/menu/admin/ultimo-reporte`).then(r => r.json()).then(setUltimoReporte).catch(console.error);
+    fetch(`${API_URL}/menu/casetas`).then(r => r.json()).then(setCasetas).catch(console.error);
   }, []);
 
   return (
@@ -317,9 +319,9 @@ function DashAdmin() {
   const [ultimoReporte, setUltimoReporte] = useState(null);
   const [casetas, setCasetas] = useState(null);
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/menu/reportes/resumen").then(r => r.json()).then(setResumen).catch(console.error);
-    fetch("http://127.0.0.1:8000/menu/admin/ultimo-reporte").then(r => r.json()).then(setUltimoReporte).catch(console.error);
-    fetch("http://127.0.0.1:8000/menu/casetas").then(r => r.json()).then(setCasetas).catch(console.error);
+    fetch(`${API_URL}/menu/reportes/resumen`).then(r => r.json()).then(setResumen).catch(console.error);
+    fetch(`${API_URL}/menu/admin/ultimo-reporte`).then(r => r.json()).then(setUltimoReporte).catch(console.error);
+    fetch(`${API_URL}/menu/casetas`).then(r => r.json()).then(setCasetas).catch(console.error);
   }, []);
 
   return (

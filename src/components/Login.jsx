@@ -36,7 +36,7 @@ function Login() {
     formData.append("contrasena", contrasena);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/login", {
+      const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         body: formData,
       });
@@ -51,7 +51,7 @@ function Login() {
 
         try {
           const res = await fetch(
-            `http://127.0.0.1:8000/obtener_nombre?id=${data.id}&rol=${data.rol}`
+            `${API_URL}/obtener_nombre?id=${data.id}&rol=${data.rol}`
           );
           const nombreData = await res.json();
 
@@ -85,7 +85,7 @@ function Login() {
     formData.append("id", idRecuperar);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/generar_token", {
+      const response = await fetch(`${API_URL}/generar_token`, {
         method: "POST",
         body: formData,
       });
@@ -106,7 +106,7 @@ function Login() {
   const validarToken = async () => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/verificar_token/?id_usuario=${idRecuperar}`,
+        `${API_URL}/verificar_token/?id_usuario=${idRecuperar}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -131,7 +131,7 @@ function Login() {
   const cambiarContrasena = async () => {
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/cambiar_contrasena",
+        `${API_URL}/cambiar_contrasena`,
         {
           method: "POST",
           headers: {

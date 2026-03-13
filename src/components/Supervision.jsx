@@ -71,7 +71,7 @@ const Supervision = () => {
     if (imgPlaca) formData.append("img_placa", imgPlaca);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/supervision/analizar", {
+      const response = await fetch(`${API_URL}/supervision/analizar`, {
         method: "POST",
         body: formData,
       });
@@ -115,7 +115,7 @@ const Supervision = () => {
     formData.append("tiempo", idReporte);
     formData.append("comentario", comentario);
     try {
-      const res = await fetch("http://127.0.0.1:8000/supervision/agregar_comentario", {
+      const res = await fetch(`${API_URL}/supervision/agregar_comentario`, {
         method: "POST",
         body: formData,
       });
@@ -152,7 +152,7 @@ const Supervision = () => {
     formData.append("caseta", caseta);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/registrar_incidente", {
+      const response = await fetch(`${API_URL}/registrar_incidente`, {
         method: "POST",
         body: formData,
       });

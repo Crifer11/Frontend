@@ -59,7 +59,7 @@ function Administracion() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/buscar?tipo=${tipo}&query=${query}`
+        `${API_URL}/buscar?tipo=${tipo}&query=${query}`
       );
       const data = await response.json();
       if (data.coincidencias) {
@@ -84,7 +84,7 @@ function Administracion() {
         try {
           const tipoCap = tipo.charAt(0).toUpperCase() + tipo.slice(1);
           const response = await fetch(
-            `http://127.0.0.1:8000/informacion?id=${seleccionado.id}&rol=${tipoCap}`
+            `${API_URL}/informacion?id=${seleccionado.id}&rol=${tipoCap}`
           );
           const data = await response.json();
           setInfo(data);
@@ -113,7 +113,7 @@ function Administracion() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/verificar_token/?id_usuario=${idUsuario}`,
+        `${API_URL}/verificar_token/?id_usuario=${idUsuario}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -137,7 +137,7 @@ function Administracion() {
   const obtenerIdResidentePorNombre = async (nombre) => {
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/residente_id_por_nombre?nombre=${encodeURIComponent(
+        `${API_URL}/residente_id_por_nombre?nombre=${encodeURIComponent(
           nombre
         )}`
       );
@@ -159,19 +159,19 @@ function Administracion() {
         case "caseta":
           const formDataCaseta = new FormData();
           formDataCaseta.append("id_caseta", seleccionado.id);
-          endpoint = "http://127.0.0.1:8000/caseta/eliminar";
+          endpoint = `${API_URL}/caseta/eliminar`;
           method = "POST";
           body = formDataCaseta;
           break;
         case "vigilante":
-          endpoint = `http://127.0.0.1:8000/vigilante/eliminar?id=${info.id}`;
+          endpoint = `${API_URL}/vigilante/eliminar?id=${info.id}`;
           break;
         case "auto":
-          endpoint = `http://127.0.0.1:8000/auto/eliminar?id=${info.id}`;
+          endpoint = `${API_URL}/auto/eliminar?id=${info.id}`;
           break;
         case "residente":
         case "autorizado":
-          endpoint = `http://127.0.0.1:8000/persona/eliminar?id=${info.id}&rol=${tipo}`;
+          endpoint = `${API_URL}/persona/eliminar?id=${info.id}&rol=${tipo}`;
           break;
         default:
           return;
@@ -394,7 +394,7 @@ function Administracion() {
                 <Stack direction="row" spacing={3} alignItems="center" sx={{ mb: 3 }}>
                   {info.foto ? (
                     <Avatar
-                      src={`http://127.0.0.1:8000/static/perfiles/${info.foto}?t=${Date.now()}`}
+                      src={`${API_URL}/static/perfiles/${info.foto}?t=${Date.now()}`}
                       sx={{ width: 100, height: 100 }}
                     />
                   ) : (
@@ -506,7 +506,7 @@ function Administracion() {
                           {a.foto && (
                             <Box sx={{ display: "flex", justifyContent: "center" }}>
                               <Avatar
-                                src={`http://127.0.0.1:8000/static/perfiles/${a.foto}?t=${Date.now()}`}
+                                src={`${API_URL}/static/perfiles/${a.foto}?t=${Date.now()}`}
                                 sx={{ width: 80, height: 80 }}
                               />
                             </Box>
@@ -565,7 +565,7 @@ function Administracion() {
                 <Stack direction="row" spacing={3} alignItems="center" sx={{ mb: 3 }}>
                   {info.foto ? (
                     <Avatar
-                      src={`http://127.0.0.1:8000/static/perfiles/${info.foto}?t=${Date.now()}`}
+                      src={`${API_URL}/static/perfiles/${info.foto}?t=${Date.now()}`}
                       sx={{ width: 100, height: 100 }}
                     />
                   ) : (
@@ -835,7 +835,7 @@ function Administracion() {
 
                   try {
                     const response = await fetch(
-                      "http://127.0.0.1:8000/caseta/guardar",
+                      `${API_URL}/caseta/guardar`,
                       {
                         method: "POST",
                         body: formData,
@@ -930,7 +930,7 @@ function Administracion() {
 
                   try {
                     const response = await fetch(
-                      "http://127.0.0.1:8000/vigilante/guardar",
+                      `${API_URL}/vigilante/guardar`,
                       {
                         method: "POST",
                         body: formData,
@@ -1065,7 +1065,7 @@ function Administracion() {
 
                       try {
                         const response = await fetch(
-                          "http://127.0.0.1:8000/auto/guardar",
+                          `${API_URL}/auto/guardar`,
                           {
                             method: "POST",
                             body: formData,
@@ -1198,7 +1198,7 @@ function Administracion() {
 
                       try {
                         const response = await fetch(
-                          "http://127.0.0.1:8000/residente/guardar",
+                          `${API_URL}/residente/guardar`,
                           {
                             method: "POST",
                             body: formData,

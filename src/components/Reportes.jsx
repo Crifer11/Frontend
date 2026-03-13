@@ -15,7 +15,7 @@ function Reportes() {
     const fetchReportes = async () => {
       try {
         const res = await fetch(
-          `http://127.0.0.1:8000/reportes?id=${id}&rol=${rol}`
+          `${API_URL}/reportes?id=${id}&rol=${rol}`
         );
         const data = await res.json();
 
@@ -67,7 +67,7 @@ function Reportes() {
             e.stopPropagation(); // evita seleccionar fila
             const idReporte = params.row.fecha.replace("T", " ");
             window.open(
-              `http://127.0.0.1:8000/descargar_pdf?id_reporte=${encodeURIComponent(
+              `${API_URL}/descargar_pdf?id_reporte=${encodeURIComponent(
                 idReporte
               )}`,
               "_blank"
@@ -204,7 +204,7 @@ function Reportes() {
               Rostro
             </Typography>
             <img
-              src={`http://127.0.0.1:8000/static/reportes/${r[0].replace(/:/g, "").replace("T", " ").trim()}_rostro.jpg?t=${Date.now()}`}
+              src={`${API_URL}/static/reportes/${r[0].replace(/:/g, "").replace("T", " ").trim()}_rostro.jpg?t=${Date.now()}`}
               alt="Rostro"
               style={{ width: '100%', maxWidth: 300, borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
               onError={(e) => (e.target.style.display = "none")}
@@ -216,7 +216,7 @@ function Reportes() {
               Placa
             </Typography>
             <img
-              src={`http://127.0.0.1:8000/static/reportes/${r[0].replace(/:/g, "").replace("T", " ").trim()}_placa.jpg?t=${Date.now()}`}
+              src={`${API_URL}/static/reportes/${r[0].replace(/:/g, "").replace("T", " ").trim()}_placa.jpg?t=${Date.now()}`}
               alt="Placa"
               style={{ width: '100%', maxWidth: 300, borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
               onError={(e) => (e.target.style.display = "none")}

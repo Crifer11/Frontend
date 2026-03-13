@@ -23,6 +23,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import PhoneIcon from "@mui/icons-material/Phone";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { useSnackbar } from "notistack";
+import { API_URL } from "./Menu"
 
 function Informacion() {
   const { enqueueSnackbar } = useSnackbar();

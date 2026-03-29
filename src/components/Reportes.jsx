@@ -34,7 +34,7 @@ function Reportes() {
   const columnasReportes = [
     {
       field: "fecha",
-      headerName: "Fecha",
+      headerName: "Fecha y Hora",
       flex: 1,
       valueFormatter: (value) =>
         new Date(value).toLocaleString(),
@@ -83,7 +83,7 @@ function Reportes() {
   const columnasIncidentes = [
     {
       field: "fecha",
-      headerName: "Fecha",
+      headerName: "Fecha y Hora",
       flex: 1,
       valueFormatter: (value) =>
         new Date(value).toLocaleString(),
@@ -131,7 +131,7 @@ function Reportes() {
         <Stack spacing={2}>
           <Box sx={{ p: 1.5, bgcolor: '#f5f5f5', borderRadius: 1, borderLeft: '4px solid #1976d2' }}>
             <Typography variant="caption" color="text.secondary" fontWeight="bold">
-              FECHA
+              FECHA Y HORA
             </Typography>
             <Typography variant="body1">{r[0]}</Typography>
           </Box>

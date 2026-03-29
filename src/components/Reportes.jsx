@@ -7,6 +7,7 @@ function Reportes() {
   const [reportes, setReportes] = useState([]);
   const [incidentes, setIncidentes] = useState([]);
   const [seleccionado, setSeleccionado] = useState(null);
+  const formatearFecha = (fecha) => new Date(fecha).toLocaleString();
 
   const rol = localStorage.getItem("rol");
   const id = localStorage.getItem("id");
@@ -133,7 +134,7 @@ function Reportes() {
             <Typography variant="caption" color="text.secondary" fontWeight="bold">
               FECHA Y HORA
             </Typography>
-            <Typography variant="body1">{r[0]}</Typography>
+            <Typography variant="body1">{formatearFecha(r[0])}</Typography>
           </Box>
 
           <Box sx={{ p: 1.5, bgcolor: '#f5f5f5', borderRadius: 1, borderLeft: '4px solid #1976d2' }}>
@@ -239,7 +240,7 @@ function Reportes() {
             <Typography variant="caption" color="text.secondary" fontWeight="bold">
               FECHA
             </Typography>
-            <Typography variant="body1">{r[0]}</Typography>
+            <Typography variant="body1">{formatearFecha(r[0])}</Typography>
           </Box>
 
           <Box sx={{ p: 1.5, bgcolor: '#ffebee', borderRadius: 1, borderLeft: '4px solid #d32f2f' }}>

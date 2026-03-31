@@ -212,7 +212,7 @@ function Informacion() {
             </Box>
           </Stack>
 
-          {(rol !== " ") && (
+          {(rol === "Residente" || rol === "Autorizado") && (
             <Box sx={{ mt: 3 }}>
               <Button variant="contained" onClick={generarToken}>
                 🔐 Generar token para edición

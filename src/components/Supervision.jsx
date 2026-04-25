@@ -18,7 +18,7 @@ import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import { useSnackbar } from "notistack";
 import { API_URL } from "./Menu";
 
-const Supervision = () => {
+const Supervision = ({ sseRef }) => {
   const { enqueueSnackbar } = useSnackbar();
   const idVigilante = localStorage.getItem("id");
 
@@ -44,16 +44,13 @@ const Supervision = () => {
   const nombre_v = localStorage.getItem("nombre");
   const caseta = localStorage.getItem("caseta");
 
-  // --- SSE: escuchar eventos del backend ---
+  // --- SSE: escuchar eventos usando la conexión de App.jsx ---
   useEffect(() => {
-    if (!idVigilante) return;
+    if (!sseRef?.current) return;
 
-    const sse = new EventSource(`${API_URL}/sse/${idVigilante}`);
-
-    sse.onmessage = (e) => {
+    sseRef.current.onmessage = (e) => {
       const data = JSON.parse(e.data);
 
-      // Mostrar imágenes si vienen
       if (data.img_rostro) setImgRostro(data.img_rostro);
       if (data.img_placa) setImgPlaca(data.img_placa);
 
@@ -67,7 +64,6 @@ const Supervision = () => {
           setImgPlaca(null);
         }, 5000);
       } else {
-        // alerta o tag no registrado
         setStatus("alerta");
         setAlarmaActiva(true);
         if (data.id_reporte) {
@@ -76,13 +72,19 @@ const Supervision = () => {
       }
     };
 
-    sse.onerror = () => {
+    sseRef.current.onerror = () => {
       console.error("SSE: error de conexión, reintentando...");
     };
 
-    // Cerrar SSE al salir de la página
-    return () => sse.close();
-  }, [idVigilante]);
+    // Al salir solo quitamos el listener, NO cerramos el SSE
+    // porque sigue activo en App.jsx para otras páginas
+    return () => {
+      if (sseRef.current) {
+        sseRef.current.onmessage = null;
+        sseRef.current.onerror = null;
+      }
+    };
+  }, [sseRef]);
 
   // Parpadeo al entrar en alerta
   useEffect(() => {

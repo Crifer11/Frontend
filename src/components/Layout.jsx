@@ -7,13 +7,14 @@ import SecurityIcon from "@mui/icons-material/Security";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import LogoutIcon from "@mui/icons-material/Logout";
 
-function Layout() {
+function Layout({ onLogout }) {
   const navigate = useNavigate();
   const location = useLocation();
   const rol = localStorage.getItem("rol");
 
   const handleNavigation = (path) => {
     if (path === "/logout") {
+      onLogout();           // cierra el SSE si es vigilante
       localStorage.clear();
       navigate("/");
     } else {
@@ -122,7 +123,7 @@ function Layout() {
             backgroundImage: "url(/fondo2.png)",
             backgroundSize: "cover",
             backgroundPosition: "center",
-            opacity: .2, // Muy tenue para no molestar
+            opacity: .2,
             zIndex: -1,
           },
         }}
@@ -133,4 +134,4 @@ function Layout() {
   );
 }
 
-export default Layout
+export default Layout;

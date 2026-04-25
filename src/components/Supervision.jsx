@@ -9,7 +9,6 @@ import {
   TextField,
   Button,
   Divider,
-  Alert,
   Drawer,
   Collapse,
 } from "@mui/material";
@@ -17,14 +16,16 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import WarningIcon from "@mui/icons-material/Warning";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import { useSnackbar } from "notistack";
-import { API_URL } from "./Menu"
+import { API_URL } from "./Menu";
 
 const Supervision = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const [serie, setSerie] = useState("");
   const idVigilante = localStorage.getItem("id");
+
+  // Imágenes recibidas por SSE (base64)
   const [imgRostro, setImgRostro] = useState(null);
   const [imgPlaca, setImgPlaca] = useState(null);
+
   const [resultado, setResultado] = useState("");
   const [status, setStatus] = useState("espera");
   const [parpadeo, setParpadeo] = useState(false);
@@ -43,6 +44,47 @@ const Supervision = () => {
   const nombre_v = localStorage.getItem("nombre");
   const caseta = localStorage.getItem("caseta");
 
+  // --- SSE: escuchar eventos del backend ---
+  useEffect(() => {
+    if (!idVigilante) return;
+
+    const sse = new EventSource(`${API_URL}/sse/${idVigilante}`);
+
+    sse.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+
+      // Mostrar imágenes si vienen
+      if (data.img_rostro) setImgRostro(data.img_rostro);
+      if (data.img_placa) setImgPlaca(data.img_placa);
+
+      setResultado(data.resultado);
+
+      if (data.tipo === "autorizado") {
+        setStatus("autorizado");
+        setTimeout(() => {
+          setStatus("espera");
+          setImgRostro(null);
+          setImgPlaca(null);
+        }, 5000);
+      } else {
+        // alerta o tag no registrado
+        setStatus("alerta");
+        setAlarmaActiva(true);
+        if (data.id_reporte) {
+          setIdReporte(data.id_reporte);
+        }
+      }
+    };
+
+    sse.onerror = () => {
+      console.error("SSE: error de conexión, reintentando...");
+    };
+
+    // Cerrar SSE al salir de la página
+    return () => sse.close();
+  }, [idVigilante]);
+
+  // Parpadeo al entrar en alerta
   useEffect(() => {
     if (status === "alerta") {
       setParpadeo(true);
@@ -51,61 +93,15 @@ const Supervision = () => {
     }
   }, [status]);
 
-  // Limpiar imágenes después de 5 segundos cuando se muestra un resultado
-  useEffect(() => {
-    if (status === "autorizado" || status === "alerta") {
-      const timer = setTimeout(() => {
-        setImgRostro(null);
-        setImgPlaca(null);
-        setSerie("");
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [status]);
-
-  const handleAnalizar = async () => {
-    const formData = new FormData();
-    formData.append("serie", serie);
-    formData.append("id_vigilante", idVigilante);
-    if (imgRostro) formData.append("img_rostro", imgRostro);
-    if (imgPlaca) formData.append("img_placa", imgPlaca);
-
-    try {
-      const response = await fetch(`${API_URL}/supervision/analizar`, {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
-      setResultado(data.resultado);
-
-      if (data.resultado === "Autorizado") {
-        setStatus("autorizado");
-        setTimeout(() => setStatus("espera"), 5000);
-      } else {
-        setStatus("alerta");
-        setAlarmaActiva(true);
-        // Guardar el id del reporte recién generado
-        if (data.id_reporte) {
-          setIdReporte(data.id_reporte);
-        }
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setStatus("alerta");
-      setAlarmaActiva(true);
-      setResultado("Error en el servidor");
-    }
-  };
-
   const apagarAlarma = () => {
     setStatus("espera");
     setParpadeo(false);
     setResultado("");
     setAlarmaActiva(false);
-    // Si no se agregó comentario, limpiar igual
     setIdReporte(null);
     setComentario("");
+    setImgRostro(null);
+    setImgPlaca(null);
   };
 
   const agregarComentario = async () => {
@@ -223,6 +219,7 @@ const Supervision = () => {
         🔒 Modo Supervisión
       </Typography>
 
+      {/* IMÁGENES */}
       <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
         <Grid container spacing={3} sx={{ maxWidth: 1200 }}>
           <Grid item xs={12} md={6}>
@@ -250,7 +247,7 @@ const Supervision = () => {
                 >
                   {imgRostro ? (
                     <img
-                      src={URL.createObjectURL(imgRostro)}
+                      src={`data:image/jpeg;base64,${imgRostro}`}
                       alt="Rostro"
                       style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
                     />
@@ -289,7 +286,7 @@ const Supervision = () => {
                 >
                   {imgPlaca ? (
                     <img
-                      src={URL.createObjectURL(imgPlaca)}
+                      src={`data:image/jpeg;base64,${imgPlaca}`}
                       alt="Placa"
                       style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
                     />
@@ -328,7 +325,7 @@ const Supervision = () => {
         </Box>
       </Paper>
 
-      {/* CUADRO DE COMENTARIO — aparece solo cuando hay alarma activa con id_reporte */}
+      {/* CUADRO DE COMENTARIO */}
       <Collapse in={!!idReporte}>
         <Paper
           elevation={3}
@@ -452,69 +449,6 @@ const Supervision = () => {
           </Box>
         </Box>
       </Drawer>
-
-      <Divider sx={{ my: 4 }} />
-
-      {/* SECCIÓN DE PRUEBAS */}
-      <Card sx={{ bgcolor: "#fff3e0", border: "2px dashed #ff9800" }}>
-        <CardContent>
-          <Alert severity="warning" sx={{ mb: 2 }}>
-            ⚠️ Sección de pruebas - Remover al conectar Arduino
-          </Alert>
-          <Typography variant="h6" gutterBottom>
-            🧪 Controles de prueba
-          </Typography>
-          <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
-            <TextField
-              label="Serie del Tag"
-              value={serie}
-              onChange={(e) => setSerie(e.target.value)}
-              placeholder="Ej: TAG123"
-              fullWidth
-            />
-            <Box>
-              <Typography variant="body2" fontWeight="bold" gutterBottom>
-                📷 Subir imagen del rostro:
-              </Typography>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setImgRostro(e.target.files[0])}
-              />
-              {imgRostro && (
-                <Typography variant="caption" color="success.main" display="block" sx={{ mt: 1 }}>
-                  ✅ Imagen de rostro cargada
-                </Typography>
-              )}
-            </Box>
-            <Box>
-              <Typography variant="body2" fontWeight="bold" gutterBottom>
-                🚘 Subir imagen de la placa:
-              </Typography>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setImgPlaca(e.target.files[0])}
-              />
-              {imgPlaca && (
-                <Typography variant="caption" color="success.main" display="block" sx={{ mt: 1 }}>
-                  ✅ Imagen de placa cargada
-                </Typography>
-              )}
-            </Box>
-            <Button variant="contained" onClick={handleAnalizar} fullWidth sx={{ mt: 2 }}>
-              🔍 Analizar (Prueba)
-            </Button>
-            {resultado && (
-              <Paper sx={{ p: 2, bgcolor: "#f5f5f5" }}>
-                <Typography variant="body2">
-                  <strong>Resultado del servidor:</strong> {resultado}
-                </Typography>
-              </Paper>
-            )}
-          </Box>
-        </CardContent>
-      </Card>
     </Box>
   );
 };

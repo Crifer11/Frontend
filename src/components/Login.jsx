@@ -12,7 +12,7 @@ import {
 import { useSnackbar } from "notistack";
 import { API_URL } from "./Menu"
 
-function Login() {
+function Login({ onLoginExitoso, onLogout }) {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -64,6 +64,9 @@ function Login() {
         } catch (e) {
           console.error("Error al obtener nombre", e);
         }
+
+        // Notificar a App.jsx para conectar SSE si es vigilante
+        onLoginExitoso(data.rol, data.id);
 
         navigate("/menu");
       } else {
@@ -178,14 +181,13 @@ function Login() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        backgroundImage: "url(/../Fondo.jpeg)", // nueva placa
+        backgroundImage: "url(/../Fondo.jpeg)",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         position: "relative",
         overflow: "hidden",
 
-        /* 🔹 Pulso eléctrico suave */
         "&::before": {
           content: '""',
           position: "absolute",
@@ -202,7 +204,6 @@ function Login() {
           zIndex: 1,
         },
 
-        /* 🔹 Flujo de energía (muy sutil) */
         "&::after": {
           content: '""',
           position: "absolute",
@@ -231,7 +232,7 @@ function Login() {
         },
       }}
     >
-      {/* 🔹 LOGO */}
+      {/* LOGO */}
       <Box
         component="img"
         src="../logo2.png"
@@ -252,10 +253,10 @@ function Login() {
       />
 
       {/* FORMULARIO */}
-      <Card 
-        sx={{ 
-          width: 380, 
-          position: "relative", 
+      <Card
+        sx={{
+          width: 380,
+          position: "relative",
           zIndex: 3,
           backdropFilter: "blur(10px)",
           backgroundColor: "rgba(255, 255, 255, 0.95)",

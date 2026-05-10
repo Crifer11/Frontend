@@ -188,11 +188,11 @@ const Supervision = ({ sseRef }) => {
         };
       case "alerta":
         return {
-          text: "🚨 Alerta de Seguridad",
+          text: `🚨 Alerta de Seguridad: ${resultado}`,
           color: "#f44336",
           bgColor: "#ffebee",
           icon: <WarningIcon sx={{ fontSize: 40, color: "#f44336" }} />,
-          detalle: resultado,
+          detalle: null,  // ya no necesitas el detalle abajo
         };
       default:
         return {

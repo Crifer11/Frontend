@@ -15,6 +15,7 @@ import {
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import WarningIcon from "@mui/icons-material/Warning";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
+import ErrorIcon from "@mui/icons-material/Error";
 import { useSnackbar } from "notistack";
 import { API_URL } from "./Menu";
 
@@ -22,21 +23,18 @@ const Supervision = ({ sseRef }) => {
   const { enqueueSnackbar } = useSnackbar();
   const idVigilante = localStorage.getItem("id");
 
-  // Imágenes recibidas por SSE (base64)
   const [imgRostro, setImgRostro] = useState(null);
   const [imgPlaca, setImgPlaca] = useState(null);
-
   const [resultado, setResultado] = useState("");
   const [status, setStatus] = useState("espera");
   const [parpadeo, setParpadeo] = useState(false);
+  const [parpadeoNaranja, setParpadeoNaranja] = useState(false);
   const [alarmaActiva, setAlarmaActiva] = useState(false);
 
-  // Estados para comentario de reporte
   const [idReporte, setIdReporte] = useState(null);
   const [comentario, setComentario] = useState("");
   const [guardandoComentario, setGuardandoComentario] = useState(false);
 
-  // Estados para el Drawer de incidentes
   const [drawerAbierto, setDrawerAbierto] = useState(false);
   const [titulo, setTitulo] = useState("");
   const [contenido, setContenido] = useState("");
@@ -44,7 +42,7 @@ const Supervision = ({ sseRef }) => {
   const nombre_v = localStorage.getItem("nombre");
   const caseta = localStorage.getItem("caseta");
 
-  // --- SSE: escuchar eventos usando la conexión de App.jsx ---
+  // --- SSE ---
   useEffect(() => {
     if (!sseRef?.current) return;
 
@@ -56,16 +54,30 @@ const Supervision = ({ sseRef }) => {
 
       setResultado(data.resultado);
 
-      if (data.tipo === "autorizado") {
+      if (data.resultado === "Autorizado") {
         setStatus("autorizado");
         setTimeout(() => {
           setStatus("espera");
           setImgRostro(null);
           setImgPlaca(null);
         }, 5000);
+
+      } else if (data.resultado === "Tag no registrado") {
+        setStatus("tag_no_registrado");
+        setParpadeoNaranja(true);
+        setTimeout(() => setParpadeoNaranja(false), 2000);
+        setTimeout(() => {
+          setStatus("espera");
+          setImgRostro(null);
+          setImgPlaca(null);
+        }, 4000);
+
       } else {
+        // Persona no autorizada / Placa incorrecta / Ambos
         setStatus("alerta");
         setAlarmaActiva(true);
+        setParpadeo(true);
+        setTimeout(() => setParpadeo(false), 3000);
         if (data.id_reporte) {
           setIdReporte(data.id_reporte);
         }
@@ -76,8 +88,6 @@ const Supervision = ({ sseRef }) => {
       console.error("SSE: error de conexión, reintentando...");
     };
 
-    // Al salir solo quitamos el listener, NO cerramos el SSE
-    // porque sigue activo en App.jsx para otras páginas
     return () => {
       if (sseRef.current) {
         sseRef.current.onmessage = null;
@@ -86,18 +96,10 @@ const Supervision = ({ sseRef }) => {
     };
   }, [sseRef]);
 
-  // Parpadeo al entrar en alerta
-  useEffect(() => {
-    if (status === "alerta") {
-      setParpadeo(true);
-      const timer = setTimeout(() => setParpadeo(false), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [status]);
-
   const apagarAlarma = () => {
     setStatus("espera");
     setParpadeo(false);
+    setParpadeoNaranja(false);
     setResultado("");
     setAlarmaActiva(false);
     setIdReporte(null);
@@ -142,21 +144,17 @@ const Supervision = ({ sseRef }) => {
       enqueueSnackbar("Todos los campos son obligatorios", { variant: "error" });
       return;
     }
-
     const formData = new FormData();
     formData.append("titulo", titulo);
     formData.append("contenido", contenido);
     formData.append("nombre_v", nombre_v);
     formData.append("caseta", caseta);
-
     try {
       const response = await fetch(`${API_URL}/registrar_incidente`, {
         method: "POST",
         body: formData,
       });
-
       const data = await response.json();
-
       if (response.ok) {
         enqueueSnackbar("Incidente registrado correctamente", { variant: "success" });
         setTitulo("");
@@ -165,7 +163,7 @@ const Supervision = ({ sseRef }) => {
       } else {
         enqueueSnackbar(data.error || "Error al registrar el incidente", { variant: "error" });
       }
-    } catch (error) {
+    } catch {
       enqueueSnackbar("Error de conexión con el servidor", { variant: "error" });
     }
   };
@@ -178,13 +176,23 @@ const Supervision = ({ sseRef }) => {
           color: "#4caf50",
           bgColor: "#e8f5e9",
           icon: <CheckCircleIcon sx={{ fontSize: 40, color: "#4caf50" }} />,
+          detalle: null,
+        };
+      case "tag_no_registrado":
+        return {
+          text: "⚠️ Tag No Registrado",
+          color: "#ff9800",
+          bgColor: "#fff3e0",
+          icon: <ErrorIcon sx={{ fontSize: 40, color: "#ff9800" }} />,
+          detalle: "El tag RFID no está registrado en el sistema.",
         };
       case "alerta":
         return {
-          text: "🚨 Alerta: Fallo de Reconocimiento",
+          text: "🚨 Alerta de Seguridad",
           color: "#f44336",
           bgColor: "#ffebee",
           icon: <WarningIcon sx={{ fontSize: 40, color: "#f44336" }} />,
+          detalle: resultado,
         };
       default:
         return {
@@ -192,23 +200,39 @@ const Supervision = ({ sseRef }) => {
           color: "#9e9e9e",
           bgColor: "#f5f5f5",
           icon: <HourglassEmptyIcon sx={{ fontSize: 40, color: "#9e9e9e" }} />,
+          detalle: null,
         };
     }
   };
 
   const statusConfig = getStatusConfig();
 
+  // Color de fondo según parpadeo activo
+  const getBgColor = () => {
+    if (parpadeo) return "#ffcdd2";
+    if (parpadeoNaranja) return "#ffe0b2";
+    return "transparent";
+  };
+
   return (
     <Box
       sx={{
         minHeight: "100vh",
-        bgcolor: parpadeo ? "#ffcdd2" : "transparent",
+        bgcolor: getBgColor(),
         p: 4,
         transition: "background-color 0.3s ease",
-        animation: parpadeo ? "parpadeo 0.5s infinite" : "none",
-        "@keyframes parpadeo": {
-          "0%, 100%": { bgcolor: "#ffcdd2" },
-          "50%": { bgcolor: "#f44336" },
+        animation: parpadeo
+          ? "parpadeoRojo 0.5s infinite"
+          : parpadeoNaranja
+          ? "parpadeoNaranja 0.5s 4"
+          : "none",
+        "@keyframes parpadeoRojo": {
+          "0%, 100%": { backgroundColor: "#ffcdd2" },
+          "50%": { backgroundColor: "#f44336" },
+        },
+        "@keyframes parpadeoNaranja": {
+          "0%, 100%": { backgroundColor: "#ffe0b2" },
+          "50%": { backgroundColor: "#ff9800" },
         },
       }}
     >
@@ -323,6 +347,11 @@ const Supervision = ({ sseRef }) => {
             <Typography variant="h5" sx={{ fontWeight: "bold", color: statusConfig.color }}>
               {statusConfig.text}
             </Typography>
+            {statusConfig.detalle && (
+              <Typography variant="body2" sx={{ color: statusConfig.color, mt: 0.5 }}>
+                {statusConfig.detalle}
+              </Typography>
+            )}
           </Box>
         </Box>
       </Paper>

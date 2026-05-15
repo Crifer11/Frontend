@@ -1115,8 +1115,16 @@ function Administracion() {
                           name="id_titular"
                           type="number"
                           defaultValue={
-                            modo === "editar" && info ? info.id_titular : ""
-                          }
+                            modo === "editar" && info ? info.id_titular : ""}
+                          required
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={4}>
+                        <TextField
+                          fullWidth
+                          label="Serie del Tag (RFID)"
+                          name="serie"
+                          defaultValue={modo === "editar" && info ? info.serie : ""}
                           required
                         />
                       </Grid>

@@ -1258,9 +1258,14 @@ function Administracion() {
                       <Grid item xs={12} md={6}>
                         <Box>
                           <Typography variant="body2" gutterBottom>
-                            Foto de perfil
+                            Foto de perfil {modo === "alta" ? "(obligatoria)" : "(opcional)"}
                           </Typography>
-                          <input type="file" name="foto" accept="image/*" />
+                          <input 
+                            type="file" 
+                            name="foto" 
+                            accept="image/*"
+                            required={modo === "alta"}
+                          />
                         </Box>
                       </Grid>
 

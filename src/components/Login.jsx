@@ -226,7 +226,7 @@ function Login({ onLoginExitoso, onLogout }) {
           "100%": { top: "100%" },
         },
       }}
-      >
+      
       {/* LOGO */}
       <Box
         component="img"

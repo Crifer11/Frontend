@@ -174,63 +174,57 @@ function Login({ onLoginExitoso, onLogout }) {
 
   // ================= UI =================
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundImage: "url(/../Fondo.png)",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        position: "relative",
-        overflow: "hidden",
-
-        "&::before": {
-          content: '""',
-          position: "absolute",
-          inset: 0,
-          background: `
-            linear-gradient(
-              135deg,
-              rgba(0, 255, 170, 0.12),
-              rgba(0, 150, 255, 0.10),
-              rgba(0, 255, 170, 0.12)
-            )
-          `,
-          animation: "electricPulse 10s ease-in-out infinite",
-          zIndex: 1,
-        },
-
-        "&::after": {
-          content: '""',
-          position: "absolute",
-          inset: 0,
-          background: `
-            linear-gradient(
-              120deg,
-              transparent 40%,
-              rgba(0, 255, 200, 0.08),
-              transparent 60%
-            )
-          `,
-          animation: "energyFlow 14s linear infinite",
-          zIndex: 2,
-        },
-
-        "@keyframes electricPulse": {
-          "0%": { opacity: 0.35 },
-          "50%": { opacity: 0.7 },
-          "100%": { opacity: 0.35 },
-        },
-
-        "@keyframes energyFlow": {
-          "0%": { transform: "translateX(-30%) translateY(-30%)" },
-          "100%": { transform: "translateX(30%) translateY(30%)" },
-        },
-      }}
+    sx={{
+      minHeight: "100vh",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundImage: "url(/Fondo.png)",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      position: "relative",
+      overflow: "hidden",
+    
+      // Brillo azul pulsante sutil
+      "&::before": {
+        content: '""',
+        position: "absolute",
+        inset: 0,
+        background: `
+          radial-gradient(
+            ellipse at 50% 80%,
+            rgba(0, 150, 255, 0.15),
+            transparent 60%
+          )
+        `,
+        animation: "glow 6s ease-in-out infinite",
+        zIndex: 1,
+      },
+    
+      // Línea de escaneo tipo HUD
+      "&::after": {
+        content: '""',
+        position: "absolute",
+        left: 0,
+        right: 0,
+        height: "2px",
+        background: "linear-gradient(90deg, transparent, rgba(0, 180, 255, 0.4), transparent)",
+        animation: "scanLine 8s linear infinite",
+        zIndex: 2,
+      },
+    
+      "@keyframes glow": {
+        "0%, 100%": { opacity: 0.3 },
+        "50%": { opacity: 0.7 },
+      },
+    
+      "@keyframes scanLine": {
+        "0%": { top: "-2px" },
+        "100%": { top: "100%" },
+      },
+    }}
     >
       {/* LOGO */}
       <Box

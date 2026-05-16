@@ -181,7 +181,7 @@ function Login({ onLoginExitoso, onLogout }) {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        backgroundImage: "url(/Fondo.png)",
+        backgroundImage: "url(/../Fondo.png)",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

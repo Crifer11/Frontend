@@ -16,7 +16,6 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 export const API_URL = "https://backend-proyecto-production-14b7.up.railway.app"
 
-// ── Fila de stats: reparte el espacio en partes iguales ─────────────
 function StatsRow({ children }) {
   return (
     <Box sx={{ display: "flex", gap: 2.5, width: "100%", flexWrap: "wrap" }}>
@@ -25,7 +24,6 @@ function StatsRow({ children }) {
   );
 }
 
-// ── Tarjeta de estadística — ocupa 1/N del ancho disponible ─────────
 function StatCard({ label, value, icon, color = "#1976d2", flex = 1, delay = 0 }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -67,7 +65,6 @@ function StatCard({ label, value, icon, color = "#1976d2", flex = 1, delay = 0 }
   );
 }
 
-// ── Fila de info ────────────────────────────────────────────────────
 function InfoRow({ label, value, icon }) {
   return (
     <Box sx={{
@@ -89,7 +86,6 @@ function InfoRow({ label, value, icon }) {
   );
 }
 
-// ── Card con título ─────────────────────────────────────────────────
 function SectionCard({ title, icon, children, color = "#1976d2", flex = 1, delay = 0, minWidth = 260 }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -118,7 +114,6 @@ function SectionCard({ title, icon, children, color = "#1976d2", flex = 1, delay
   );
 }
 
-// ── Token de edición ────────────────────────────────────────────────
 function TokenSection({ id, flex = 1 }) {
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(false);
@@ -172,8 +167,7 @@ function TokenSection({ id, flex = 1 }) {
   );
 }
 
-// ── Header de perfil ────────────────────────────────────────────────
-function ProfileHeader({ nombre, rol, visible }) {
+function ProfileHeader({ nombre, rol, foto, visible }) {
   const ROLE_CFG = {
     Residente:     { color: "#1976d2", bg: "#e3f2fd", icon: "🏠" },
     Autorizado:    { color: "#7b1fa2", bg: "#f3e5f5", icon: "🔑" },
@@ -192,9 +186,16 @@ function ProfileHeader({ nombre, rol, visible }) {
       <Box sx={{ height: 8, bgcolor: cfg.color }} />
       <CardContent sx={{ p: 3, "&:last-child": { pb: 3 } }}>
         <Stack direction="row" spacing={3} alignItems="center">
-          <Avatar sx={{ width: 80, height: 80, bgcolor: cfg.color, fontSize: "2.2rem", flexShrink: 0 }}>
-            {nombre?.charAt(0).toUpperCase()}
-          </Avatar>
+          {foto ? (
+            <Avatar
+              src={`${API_URL}/static/perfiles/${foto}?t=${Date.now()}`}
+              sx={{ width: 80, height: 80, flexShrink: 0 }}
+            />
+          ) : (
+            <Avatar sx={{ width: 80, height: 80, bgcolor: cfg.color, fontSize: "2.2rem", flexShrink: 0 }}>
+              {nombre?.charAt(0).toUpperCase()}
+            </Avatar>
+          )}
           <Box>
             <Typography variant="h5" fontWeight="bold" color="text.primary" lineHeight={1.2}>
               {nombre}
@@ -209,10 +210,6 @@ function ProfileHeader({ nombre, rol, visible }) {
     </Card>
   );
 }
-
-// ══════════════════════════════════════════════════════════════════
-// DASHBOARDS — todos usan flex en lugar de Grid
-// ══════════════════════════════════════════════════════════════════
 
 function DashResidente({ id }) {
   const [reportes, setReportes] = useState(null);
@@ -361,19 +358,27 @@ function DashAdmin() {
   );
 }
 
-// ══════════════════════════════════════════════════════════════════
-// COMPONENTE PRINCIPAL
-// ══════════════════════════════════════════════════════════════════
 function Menu() {
   const rol = localStorage.getItem("rol");
   const nombre = localStorage.getItem("nombre");
   const id = localStorage.getItem("id");
   const [headerVisible, setHeaderVisible] = useState(false);
+  const [foto, setFoto] = useState(null);
 
   useEffect(() => {
     const t = setTimeout(() => setHeaderVisible(true), 50);
     return () => clearTimeout(t);
   }, []);
+
+  // Cargar foto de perfil solo para Residente y Autorizado
+  useEffect(() => {
+    if (rol === "Residente" || rol === "Autorizado") {
+      fetch(`${API_URL}/informacion?id=${id}&rol=${rol}`)
+        .then(r => r.json())
+        .then(data => { if (data.foto) setFoto(data.foto); })
+        .catch(console.error);
+    }
+  }, [id, rol]);
 
   const renderDashboard = () => {
     switch (rol) {
@@ -391,7 +396,7 @@ function Menu() {
         🏠 Bienvenido, {nombre}
       </Typography>
 
-      <ProfileHeader nombre={nombre} rol={rol} visible={headerVisible} />
+      <ProfileHeader nombre={nombre} rol={rol} foto={foto} visible={headerVisible} />
 
       {renderDashboard()}
 

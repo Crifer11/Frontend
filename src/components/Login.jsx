@@ -174,14 +174,14 @@ function Login({ onLoginExitoso, onLogout }) {
 
   // ================= UI =================
   return (
-    <box
+    <Box
       sx={{
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        backgroundImage: "url(/../Fondo.png)",
+        backgroundImage: "url(/Fondo.png)",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -226,7 +226,7 @@ function Login({ onLoginExitoso, onLogout }) {
           "100%": { top: "100%" },
         },
       }}
-      
+      >
       {/* LOGO */}
       <Box
         component="img"
